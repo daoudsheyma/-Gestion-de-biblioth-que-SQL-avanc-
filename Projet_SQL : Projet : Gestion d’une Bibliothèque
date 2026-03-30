@@ -1,0 +1,146 @@
+
+#####EXERCICE 1#####
+
+#1
+Create database bibliotheque;
+use bibliotheque; 
+
+#2
+CREATE TABLE Livres (
+    ID_Livre INT PRIMARY KEY,
+    Titre VARCHAR(255) ,
+    Auteur VARCHAR(255),
+    Annee_Publication YEAR,
+  UNIQUE(Titre,Auteur,Annee_Publication)
+);
+
+CREATE TABLE Etudiants (
+    ID_Etudiant INT PRIMARY KEY,
+    Nom VARCHAR(255),
+    Prenom VARCHAR(255) ,
+    Classe VARCHAR(50)
+);
+
+CREATE TABLE Emprunts (
+    ID_Emprunt INT PRIMARY KEY,
+    ID_Livre INT,
+    ID_Etudiant INT,
+    Date_Emprunt DATE,
+    Date_Retour DATE,
+    FOREIGN KEY (ID_Livre) REFERENCES Livres(ID_Livre),
+    FOREIGN KEY (ID_Etudiant) REFERENCES Etudiants(ID_Etudiant)
+);
+
+);
+
+3)
+a)
+SELECT L.Titre, L.Auteur, E.Date_Emprunt
+FROM Emprunts E
+JOIN Livres L ON E.ID_Livre = L.ID_Livre
+WHERE E.Date_Retour IS NULL;
+
+b)
+SELECT Etu.ID_Etudiant, Etu.Nom, Etu.Prenom, COUNT(E.ID_Emprunt) as Nombre_Emprunts
+FROM Etudiants Etu
+LEFT JOIN Emprunts E ON Etu.ID_Etudiant = E.ID_Etudiant
+GROUP BY Etu.ID_Etudiant;
+
+
+SELECT Etu.ID_Etudiant, Etu.Nom, Etu.Prenom, COALESCE(COUNT(E.ID_Emprunt), 0) as Nombre_Emprunts
+FROM Etudiants Etu
+LEFT JOIN Emprunts E ON Etu.ID_Etudiant = E.ID_Etudiant
+GROUP BY Etu.ID_Etudiant
+ORDER BY Nombre_Emprunts;
+
+c)
+SELECT L.Titre, L.Auteur, L.Annee_Publication
+FROM Livres L
+LEFT JOIN Emprunts E ON L.ID_Livre = E.ID_Livre
+WHERE E.ID_Emprunt IS NULL;
+
+d)
+SELECT Etu.Nom, Etu.Prenom, L.Titre, E.Date_Emprunt, DATE_ADD(E.Date_Emprunt, INTERVAL 15 DAY) as Date_Retour_Prevue
+FROM Emprunts E
+JOIN Livres L ON E.ID_Livre = L.ID_Livre
+JOIN Etudiants Etu ON E.ID_Etudiant = Etu.ID_Etudiant
+WHERE E.Date_Retour IS NULL;
+
+e)
+SELECT L.Titre, L.Auteur, Etu.Classe
+FROM Emprunts E
+JOIN Livres L ON E.ID_Livre = L.ID_Livre
+JOIN Etudiants Etu ON E.ID_Etudiant = Etu.ID_Etudiant
+GROUP BY L.ID_Livre, Etu.Classe
+HAVING COUNT(DISTINCT E.ID_Etudiant) > 1;
+
+
+####EXERCICE2####
+
+CREATE TABLE Ventes (
+    ID_Vente INT AUTO_INCREMENT PRIMARY KEY,
+    ID_Livre INT,
+    Date_Vente DATE,
+    Quantite INT,
+    Prix_Unitaire DECIMAL(10,2),
+    FOREIGN KEY (ID_Livre) REFERENCES Livres(ID_Livre)
+);
+
+ALTER TABLE Ventes ADD ID_Etudiant INT;
+
+
+ALTER TABLE Ventes ADD FOREIGN KEY (ID_Etudiant) REFERENCES Etudiants(ID_Etudiant);
+
+SELECT L.Titre, L.Auteur, SUM(V.Quantite * V.Prix_Unitaire) AS Revenus
+FROM Ventes V
+JOIN Livres L ON V.ID_Livre = L.ID_Livre
+GROUP BY V.ID_Livre
+ORDER BY Revenus DESC
+LIMIT 1;
+
+SELECT YEAR(Date_Vente) AS Annee, SUM(Quantite * Prix_Unitaire) AS Revenus
+FROM Ventes
+GROUP BY YEAR(Date_Vente)
+ORDER BY Revenus DESC
+LIMIT 1;
+
+SELECT E.ID_Etudiant, E.Nom, E.Prenom, COUNT(V.ID_Vente) AS Nombre_Achats
+FROM Etudiants E
+JOIN Ventes V ON E.ID_Etudiant = V.ID_Etudiant
+GROUP BY E.ID_Etudiant
+ORDER BY Nombre_Achats DESC;
+
+SELECT L.Titre, L.Auteur
+FROM Livres L
+LEFT JOIN Ventes V ON L.ID_Livre = V.ID_Livre
+WHERE V.ID_Vente IS NULL;
+
+SELECT L.Auteur, SUM(V.Quantite * V.Prix_Unitaire) AS Revenus
+FROM Ventes V
+JOIN Livres L ON V.ID_Livre = L.ID_Livre
+GROUP BY L.Auteur
+ORDER BY Revenus DESC;
+
+
+SELECT YEAR(Date_Vente) AS Annee, SUM(Quantite * Prix_Unitaire) AS Revenus
+FROM Ventes
+GROUP BY YEAR(Date_Vente)
+ORDER BY Revenus DESC
+LIMIT 1;
+
+SELECT E.ID_Etudiant, E.Nom, E.Prenom, COUNT(V.ID_Vente) AS Nombre_Achats
+FROM Etudiants E
+JOIN Ventes V ON E.ID_Etudiant = V.ID_Etudiant
+GROUP BY E.ID_Etudiant
+ORDER BY Nombre_Achats DESC;
+
+SELECT L.Titre, L.Auteur
+FROM Livres L
+LEFT JOIN Ventes V ON L.ID_Livre = V.ID_Livre
+WHERE V.ID_Vente IS NULL;
+
+SELECT L.Auteur, SUM(V.Quantite * V.Prix_Unitaire) AS Revenus
+FROM Ventes V
+JOIN Livres L ON V.ID_Livre = L.ID_Livre
+GROUP BY L.Auteur
+ORDER BY Revenus DESC;
