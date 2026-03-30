@@ -1,6 +1,8 @@
 
 Projet de conception et d’implémentation d’une base de données relationnelle pour gérer les livres, les étudiants et les emprunts, avec exploitation analytique des données et suivi des transactions.
 
+⚠️ Pour des raisons pratiques, ce dépôt contient uniquement le code SQL (création des tables et requêtes). Le dataset n’est pas inclus.
+
 //Ce projet réalisé dans le cadre d’un partiel SQL avancé consiste à :
 
 Concevoir un schéma relationnel complet avec tables, clés primaires et étrangères, contraintes d’intégrité et relations.
