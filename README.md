@@ -1,4 +1,4 @@
-# -Gestion-de-biblioth-que-SQL-avance-
+
 Projet de conception et d’implémentation d’une base de données relationnelle pour gérer les livres, les étudiants et les emprunts, avec exploitation analytique des données et suivi des transactions.
 
 //Ce projet réalisé dans le cadre d’un partiel SQL avancé consiste à :
